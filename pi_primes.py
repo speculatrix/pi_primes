@@ -1,16 +1,18 @@
 #!/usr/bin/python3
-# searches for prime numbers which are int(pi * 10^N)
-# no optimisation has been done, and bugs are likely
+''' searches for prime numbers which are int(pi * 10^N)
+    no optimisation has been done, and bugs are likely
+'''
 
-from mpmath import *        # see https://mpmath.org/
+from mpmath import mp       # see https://mpmath.org/
 from primePy import primes  # pip3 install primePy
 
 MAX_DEC_PLACES = 50
 
 ##########################################################################################
 def main():
+    ''' main function '''
 
-    
+
     stop_count = MAX_DEC_PLACES     # stops runaway process
     mp.dps = MAX_DEC_PLACES         # limit decimal places
 
