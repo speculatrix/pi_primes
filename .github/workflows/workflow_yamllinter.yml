@@ -1,0 +1,59 @@
+---
+name: workflow_yamllinter
+# A workflow to run yamllint on the reusable workflows and example library
+
+on:
+  # Triggers the workflow on push or pull request events,
+  # PRq only for the "main" branch
+  push:
+    branches: ["main", "devel"]
+  pull_request:
+    branches: ["main"]
+  # schedule:
+  #  - cron: '15 5 * * 3'
+
+  # Allows you to run this workflow manually from the Actions tab
+  # yes, this is meant to be an empty dict
+  workflow_dispatch:
+
+jobs:
+  yamllint:
+    runs-on: arc-devops-common
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: print start
+        run: date && echo Started workflow
+
+      - name: install programs
+        run: sudo apt-get update && sudo apt-get install -y git wget yamllint
+
+      - name: Find .yamllint.yml
+        run: echo "$PWD" ; find . -iname ".yamllint.yml" -ls
+
+      - name: Copy and print .yamllint.yml
+        run: >
+            if [ -f .yamllint.yml ] ; then
+                cp -p .yamllint.yml "$HOME"
+                ls -la "$HOME/.yamllint.yml"
+                echo "=== .yamllint.yml ==="
+                cat "$HOME/.yamllint.yml"
+            else
+                echo "Unable to find .yamllint.yml"
+            fi
+
+      - name: yamllint of the reusable workflows
+        run: 'find .github/workflows -type f -iname "*.yml"
+              -exec echo "=== {} ===" \;
+              -exec yamllint -c "$HOME/.yamllint.yml" {} \;'
+
+      - name: yamllint of the workflow examples
+        run: 'find examples -type f -iname "*.yml"
+              -exec echo "=== {} ===" \;
+              -exec yamllint -c "$HOME/.yamllint.yml" {} \;'
+
+      - name: print end
+        run: date && echo Ended workflow
+...
